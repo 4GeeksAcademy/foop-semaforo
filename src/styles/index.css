@@ -1,11 +1,86 @@
-/* 
+body {
+    background-color: #333; /* Fondo oscuro para que resalte */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: sans-serif;
+}
 
-    You can write your own styles here...
-    
-    
-    ...Or you can use the import command to include 
-    other sylesheets into your bunde as well, e.j:
-    
-    import 'relative/path/to/stylesheet.scss';
+/* Alineacion de semaforo*/
+.traffic-light-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
 
-*/
+/* Poste del Semaforo */
+.traffic-light-post {
+    width: 15px;
+    height: 150px;
+    background-color: #1a1a1a;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.traffic-light {
+    background-color: #2c2c2c;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+    border: 3px solid #1a1a1a;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* Efecto luces apagadas */
+.light {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; 
+    opacity: 0.3; 
+    transition: all 0.2s ease-in-out;
+    cursor: pointer; 
+    border: 2px solid #111;
+}
+
+/* Colores de fondo */
+.light.red {
+    background-color: #ff0000;
+}
+.light.yellow {
+    background-color: #ffff00;
+}
+.light.green {
+    background-color: #00ff00;
+}
+
+/* Efecto luz encendida */
+.light.active {
+    opacity: 1; 
+    box-shadow: 0 0 25px 5px currentColor; 
+}
+
+
+.light.red.active {
+    color: #ff0000;
+}
+.light.yellow.active {
+    color: #ffff00;
+}
+.light.green.active {
+    color: #00ff00;
+}
+
+/* Parpadeo */
+.light.blink {
+    animation: blink-animation 0.5s 2; 
+}
+
+@keyframes blink-animation {
+    0% { opacity: 1; }
+    49% { opacity: 1; }
+    50% { opacity: 0.3; } 
+    100% { opacity: 0.3; }
+}

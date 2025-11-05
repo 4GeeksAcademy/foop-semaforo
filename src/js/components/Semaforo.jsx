@@ -1,76 +1,82 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
+const DURATIONS = {
+    red: 15000,
+    green: 15000,
+    yellow: 5000
+};
+
+// Orden para el ciclo
+const NEXT_COLOR = {
+    red: 'green',
+    green: 'yellow',
+    yellow: 'red'
+};
 
 const Semaforo = () => {
-        const [color, setColor] = useState('red');
+    const [activeColor, setActiveColor] = useState('red');
+    const [isBlinking, setIsBlinking] = useState(false);
+    const timerRef = useRef(null);
+    const changeColor = (newColor) => {
+        setIsBlinking(true);
+        setTimeout(() => {
+            setIsBlinking(false);
+            setActiveColor(newColor);
+        }, 1000); 
+    };
 
-    //Ciclo de Colores
-    const nextColor = useCallback(() => {
-        if (color === 'red') {
-            setColor('green'); // Rojo a Verde
-        } else if (color === 'green') {
-            setColor('yellow'); // Verde a Amarillo
-        } else if (color === 'yellow') {
-            setColor('red'); // Amarillo a Rojo
-        }
-    }, [color]);
-
-    // Efecto para el temporizador automático
     useEffect(() => {
-        const durations = {
-            red: 15000,    
-            green: 15000,  
-            yellow: 5000   
+        if (timerRef.current) {
+            clearTimeout(timerRef.current);
+        }
+
+        const duration = DURATIONS[activeColor];
+        const nextColor = NEXT_COLOR[activeColor];
+
+        // Creamos un nuevo temporizador
+        timerRef.current = setTimeout(() => {
+            changeColor(nextColor);
+        }, duration);
+
+        // Función de limpieza:
+         return () => {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
         };
+    }, [activeColor]); 
 
-        const timer = setTimeout(() => {
-            nextColor();
-        }, durations[color]);
-
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [color, nextColor]);
-
-    // Función clic Luz Activa
+    //Click
     const handleLightClick = (clickedColor) => {
-        if (color === clickedColor) {
-            nextColor();
+        if (clickedColor === activeColor) {
+            if (timerRef.current) {
+                clearTimeout(timerRef.current);
+            }
+            
+            const nextColor = NEXT_COLOR[activeColor];
+            changeColor(nextColor);
         }
     };
 
     return (
-        // Contenedor principal que centra el semáforo
-        <div className="flex justify-center items-center min-h-screen bg-gray-900">
-            
-            {/* El poste del semáforo */}
-            <div className="bg-gray-800 p-4 rounded-lg flex flex-col gap-4 border-4 border-gray-700">
-                
-                {/* Luz Roja */}
-                <div 
-                    className={
-                        "w-24 h-24 rounded-full bg-red-900 transition-all duration-200 cursor-pointer " +
-                        (color === 'red' ? "bg-red-500 shadow-[0_0_25px_5px_#ef4444]" : "")
-                    }
+        <div className="traffic-light-container">
+            {/*Poste del semaforo */}
+            <div className="traffic-light-post"></div>
+
+            {/* Caja de Luces */}
+            <div className="traffic-light">
+                <div
+                    className={`light red ${activeColor === 'red' ? 'active' : ''} ${isBlinking && activeColor === 'red' ? 'blink' : ''}`}
                     onClick={() => handleLightClick('red')}
-                />
-                
-                {/* Luz Amarilla */}
-                <div 
-                    className={
-                        "w-24 h-24 rounded-full bg-yellow-900 transition-all duration-200 cursor-pointer " +
-                        (color === 'yellow' ? "bg-yellow-400 shadow-[0_0_25px_5px_#facc15]" : "")
-                    }
+                ></div>
+                <div
+                    className={`light yellow ${activeColor === 'yellow' ? 'active' : ''} ${isBlinking && activeColor === 'yellow' ? 'blink' : ''}`}
                     onClick={() => handleLightClick('yellow')}
-                />
-                
-                {/* Luz Verde */}
-                <div 
-                    className={
-                        "w-24 h-24 rounded-full bg-green-900 transition-all duration-200 cursor-pointer " +
-                        (color === 'green' ? "bg-green-500 shadow-[0_0_25px_5px_#22c55e]" : "")
-                    }
+                ></div>
+                <div
+                    className={`light green ${activeColor === 'green' ? 'active' : ''} ${isBlinking && activeColor === 'green' ? 'blink' : ''}`}
                     onClick={() => handleLightClick('green')}
-                />
+                ></div>
             </div>
         </div>
     );
